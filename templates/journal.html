@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petit Corporate - Journal Quotidien</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+        }
+        
+        .status {
+            background: #2ecc71;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .generate-btn {
+            display: inline-block;
+            margin: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        
+        .generate-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .journal-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .journal-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .journal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .journal-date {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .journal-day {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .journal-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-today {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .badge-yesterday {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .badge-past {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .journal-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+            transform: translateY(-1px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+        
+        .empty-state h2 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-box {
+            background: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 1rem;
+            margin: 2rem 0;
+            border-radius: 4px;
+        }
+        
+        .info-box p {
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .info-box strong {
+            color: #1668a3;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .journal-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .journal-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        /* Animation pour les boutons */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .generate-btn {
+            animation: pulse 2s infinite;
+        }
+        
+        .generate-btn:hover {
+            animation: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Petit Corporate</h1>
+            <p class="subtitle">Votre journal quotidien numérique personnalisé</p>
+            <div class="status">
+                Génération automatique à 6h00 chaque matin
+            </div>
+            
+            <div style="margin: 1rem 0;">
+                <a href="/generate" class="generate-btn">
+                    Générer le journal d'aujourd'hui
+                </a>
+            </div>
+        </header>
+        
+        {% if dates %}
+        <div class="journal-list">
+            {% for date_info in dates %}
+            <div class="journal-card">
+                <div class="journal-header">
+                    <div>
+                        <div class="journal-date">{{ date_info.formatted }}</div>
+                        <div class="journal-day">{{ date_info.day_name }}</div>
+                    </div>
+                    <div>
+                        {% if date_info.is_today %}
+                            <span class="journal-badge badge-today">Aujourd'hui</span>
+                        {% elif date_info.is_yesterday %}
+                            <span class="journal-badge badge-yesterday">Hier</span>
+                        {% else %}
+                            <span class="journal-badge badge-past">Archives</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="journal-actions">
+                    <a href="/journal/{{ date_info.date }}" class="btn btn-primary">
+                        📄 Voir PDF
+                    </a>
+                    <a href="/download/{{ date_info.date }}" class="btn btn-success">
+                        ⬇️ Télécharger
+                    </a>
+                    <a href="/preview/{{ date_info.date }}" class="btn btn-secondary">
+                        👁️ Aperçu HTML
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>⏳ Aucun journal disponible</h2>
+            <p>Générez votre premier journal en cliquant sur le bouton ci-dessus.</p>
+            <p>La génération automatique est programmée tous les matins à 6h00.</p>
+            <div style="margin-top: 1rem;">
+                <a href="/generate" class="generate-btn">
+                    🚀 Générer maintenant
+                </a>
+            </div>
+        </div>
+        {% endif %}
+        
+        <footer>
+            <p>Petit Corporate - Voir le travail avant de voir son petit dej</p>
+        </footer>
+    </div>
+</body>
+</html>

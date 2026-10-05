@@ -12,8 +12,8 @@ from signal_matin.renderer import render_html
 
 EXPECTED_PAGES = {
     DensityMode.COMPACT: 4,
-    DensityMode.STANDARD: 7,
-    DensityMode.EXTENDED: 7,
+    DensityMode.STANDARD: 6,
+    DensityMode.EXTENDED: 5,
 }
 
 
@@ -27,12 +27,55 @@ def test_html_has_expected_pages_and_sections():
         assert "En bref, en detail" in html
 
 
+def test_front_page_keeps_local_section_visible_without_local_news():
+    edition = normaliser_edition(
+        construire_demo(dt.date(2026, 9, 26)), mode="standard"
+    ).model_copy(update={"tech": [], "tech_news": []})
+    html = render_html(edition)
+    first_page = html.split('<section class="sheet page-1', 1)[1].split(
+        '<section class="sheet page-2', 1
+    )[0]
+
+    assert "<h2>Local</h2>" in first_page
+    assert "Aucune actualite locale disponible ce matin." in first_page
+
+
+def test_front_page_prioritizes_local_articles_in_compact_block():
+    edition = normaliser_edition(
+        construire_demo(dt.date(2026, 9, 26)), mode="standard"
+    )
+    html = render_html(edition)
+    first_page = html.split('<section class="sheet page-1', 1)[1].split(
+        '<section class="sheet page-2', 1
+    )[0]
+    local = first_page.split('class="briefs front-local-briefs"', 1)[1].split(
+        "</section>", 1
+    )[0]
+
+    assert all(item.title[:120] in local for item in edition.tech[:2])
+    assert local.count("Lire l'article complet") == sum(
+        bool(item.source and item.source.url) for item in edition.tech[:2]
+    )
+    assert first_page.index("front-local-briefs") < first_page.index(
+        '<section class="briefs">'
+    )
+
+
+def test_curiosity_page_and_briefs_detail_illustration_are_removed():
+    edition = normaliser_edition(
+        construire_demo(dt.date(2026, 9, 26)), mode="standard"
+    )
+    html = render_html(edition)
+
+    assert "Veille &amp; curiosites" not in html
+    assert 'class="briefs-detail-floor"' not in html
+
+
 def test_no_major_overflow():
     demo = construire_demo(dt.date(2026, 9, 26))
-    for mode, count in EXPECTED_PAGES.items():
+    for mode in EXPECTED_PAGES:
         edition = normaliser_edition(demo, mode=mode)
         layout = inspecter_html(render_html(edition))
-        assert len(layout) == count
         assert not [page for page in layout if page["overflow"]]
 
 
@@ -41,7 +84,7 @@ def test_pdf_is_a4(tmp_path):
         construire_demo(dt.date(2026, 9, 26)), mode="standard")
     path = generer_pdf(edition, tmp_path / "signal-matin.pdf")
     reader = PdfReader(str(path))
-    assert len(reader.pages) == EXPECTED_PAGES[DensityMode.STANDARD]
+    assert len(reader.pages) == len(inspecter_html(render_html(edition)))
     for page in reader.pages:
         assert abs(float(page.mediabox.width) - 595.28) < 1.0
         assert abs(float(page.mediabox.height) - 841.89) < 1.0
@@ -58,11 +101,11 @@ def test_tech_pagination_depends_on_text_volume():
         for item in edition.tech_news
     ]
     html = render_html(edition.model_copy(update={"tech_news": long_items}))
-    assert "Technologie &amp; IA - suite" in html
+    assert "Local - suite" in html
     assert "tech-continuation-page" in html
 
 
-def test_extra_news_tech_and_curiosity_create_pages_without_omission():
+def test_extra_news_and_tech_create_pages_without_omission():
     edition = normaliser_edition(
         construire_demo(dt.date(2026, 9, 26)), mode="standard")
     source_item = edition.news.all_secondary()[0]
@@ -89,14 +132,15 @@ def test_extra_news_tech_and_curiosity_create_pages_without_omission():
             "economy": [], "society": [], "science": [], "culture": [],
         }),
         "tech_news": tech_items,
-        "curiosity_news": curiosity_items,
     })
     html = render_html(edition)
-    assert html.count('class="sheet ') == 10
-    for item in [*news_items, *tech_items, *curiosity_items]:
+    assert html.count('class="sheet ') == 8
+    for item in [*news_items, *tech_items]:
         assert item.title in html
+    for item in curiosity_items:
+        assert item.title not in html
     assert "tech-continuation is-four" in html
-    assert "curiosity-continuation is-four" in html
+    assert "Veille &amp; curiosites" not in html
 
 
 def test_large_daily_variation_creates_balanced_continuation_pages():

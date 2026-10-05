@@ -107,14 +107,14 @@ def build_live(
             setting(config, "tech.feeds", []) or [], now,
             limit=int(setting(config, "tech.limit", 6) or 6),
             max_age_hours=int(setting(config, "tech.max_age_hours", 96) or 96),
-            status_name="Technologie & IA",
+            status_name="Local",
         )
     else:
-        tech_news, tech_status = [], _disabled("Technologie & IA")
+        tech_news, tech_status = [], _disabled("Local")
     statuses.append(tech_status)
 
     tech_digest = [DigestItem(
-        title=item.title, summary=item.summary, source=item.source,
+        title=item.title, category=item.category, summary=item.summary, source=item.source,
         importance=item.importance,
     ) for item in tech_news]
     curiosities = [

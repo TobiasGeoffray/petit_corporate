@@ -180,7 +180,7 @@ def _chapters(edition: MorningEdition) -> list[EreaderChapter]:
     if not tech_body:
         tech_body = "".join(_digest(item) for item in edition.tech)
     if tech_body:
-        chapters.append(EreaderChapter("tech", "Technologie & IA", tech_body))
+        chapters.append(EreaderChapter("tech", "Local", tech_body))
 
     curiosity = _news_collection(edition.curiosity_news)
     watch = "".join(_digest(item) for item in edition.watch)

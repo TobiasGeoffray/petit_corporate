@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackgroundAgentGlobalSettings">
+    <option name="selectedModelId" value="auto" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ec1638e7-7f54-4747-9430-c04f7af04c29" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/tests.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/assets/signal_matin.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/assets/signal_matin.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/connectors/rss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/connectors/rss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/connectors/weather.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/connectors/weather.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/ereader.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/ereader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/mock_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/mock_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/signal_matin/renderer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/signal_matin/renderer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_renderer.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_renderer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/signal_matin.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/signal_matin.css" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_/home/tobias/Bureau/signal-matin" value="3K6hBiVCFqx8NrIsZwvwORcjJDp" />
+    </persistenceIdMap>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;TobiasGeoffray&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/sosoj92/signal-matin.git&quot;,
+    &quot;accountId&quot;: &quot;78a55462-0709-460f-8ff6-fcbc32548f2f&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3K44qZPWaY3K93CV7pgPxttMK4Z" />
+  <component name="ProjectSessionTemplates">
+    <option name="panelTemplate">
+      <template>
+        <option name="modeId" value="Agent" />
+        <option name="model">
+          <model>
+            <option name="modelType" value="builtin_id" />
+            <option name="modelValue" value="auto" />
+          </model>
+        </option>
+        <option name="targetType" value="BACKGROUND" />
+        <option name="worktreeMode" value="WORKSPACE" />
+      </template>
+    </option>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.app.executor": "Run",
+    "Python.setup.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/tobias/Bureau/petit_coporate",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-73a66231627c-5bd6d13a2a75-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-262.10968.92" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ec1638e7-7f54-4747-9430-c04f7af04c29" name="Changes" comment="" />
+      <created>1790803699684</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1790803699684</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

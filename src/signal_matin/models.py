@@ -72,6 +72,8 @@ class WeatherBlock(Modele):
     low_c: float | None = None
     high_c: float | None = None
     wind_kmh: float | None = None
+    wind_direction: float | None = None
+    wind_gust_kmh: float | None = None
     summary: str = Field(default="", max_length=420)
     advice: str = Field(default="", max_length=240)
 
@@ -121,6 +123,7 @@ class NewsBundle(Modele):
 
 class DigestItem(Modele):
     title: str = Field(min_length=1, max_length=220)
+    category: str = Field(default="Actualites", max_length=80)
     summary: str = Field(default="", max_length=900)
     source: SourceRef | None = None
     importance: Importance = Importance.NORMAL

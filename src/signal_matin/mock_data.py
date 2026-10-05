@@ -126,7 +126,7 @@ def construire_demo(date: dt.date | None = None) -> MorningEdition:
             ],
         ),
         tech=[
-            DigestItem(title=item.title, summary=item.summary, source=item.source, importance=item.importance)
+            DigestItem(title=item.title, category=item.category, summary=item.summary, source=item.source, importance=item.importance)
             for item in tech_news
         ],
         tech_news=tech_news,

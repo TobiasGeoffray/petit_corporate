@@ -148,6 +148,14 @@ footer,
 .brief-list .news-card h3 { font-size: 9.5pt; line-height: 1.02; }
 .brief-list .article-meta { font-size: 4.65pt; }
 .brief-list .news-card p:last-child { margin-top: 1mm; font-size: 6.8pt; line-height: 1.22; }
+.front-local-briefs { margin-bottom: 2.5mm; }
+.front-local-briefs .section-header { margin-bottom: 1.2mm; }
+.front-local-briefs .brief-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 3mm; }
+.front-local-briefs .brief-list .news-card { margin: 0; padding: 0 0 1mm; border-bottom: var(--hairline) solid var(--shade); }
+.front-local-briefs .brief-list .news-card h3 { margin: 0 0 .6mm; font-size: 8pt; line-height: 1.05; }
+.front-local-briefs .brief-list .news-card p:not(.article-meta):not(.article-link) { margin: 0; font-size: 6.4pt; line-height: 1.18; }
+.front-local-briefs .article-meta { display: none; }
+.front-local-briefs .article-link { display: block; margin: .5mm 0 0; font-size: 5.5pt; }
 
 .briefs-detail-layout {
   display: grid;
@@ -182,8 +190,6 @@ footer,
 .briefs-detail-grid.is-short .brief-detail h3 { font-size: 18pt; line-height: .98; }
 .briefs-detail-grid.is-short .brief-copy p { font-size: 9.4pt; line-height: 1.5; }
 .briefs-detail-grid.is-short .brief-detail { padding-bottom: 6mm; }
-.briefs-detail-floor .curiosity-engraving { margin-top: 4mm; }
-.briefs-detail-floor .curiosity-engraving svg { height: 27mm; }
 .continued-note { margin: 3mm 0 0; text-align: right; font: italic 6.4pt var(--serif); color: var(--muted); }
 
 .front-lower { display: grid; grid-template-columns: 1fr 1.22fr; gap: 0; margin-top: 2.5mm; border-top: var(--rule) solid; }
@@ -196,6 +202,11 @@ footer,
 .front-lower .digest-item h3 { font-size: 9.2pt; }
 .front-lower .digest-item p { font-size: 7pt; line-height: 1.24; }
 .front-lower .digest-item small { display: none; }
+.front-lower .digest-section { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+.front-lower .digest-section > header { grid-column: 1 / -1; }
+.front-lower .digest-section .digest-item { padding: 0 0 1.5mm; border-bottom: var(--hairline) solid var(--shade); }
+.front-lower .digest-section .digest-item:last-child { border-bottom: 0; }
+.front-lower .local-empty { margin: 0; font-size: 6.8pt; line-height: 1.25; color: var(--muted); font-style: italic; }
 .front-watch ol { list-style: none; margin: 0; padding: 0; }
 .front-watch li { display: grid; grid-template-columns: 5mm 1fr; gap: 1.5mm; padding: .75mm 0; border-bottom: var(--hairline) solid var(--shade); }
 .front-watch li > span { display: grid; place-items: center; width: 4mm; height: 4mm; border-radius: 50%; background: var(--ink); color: var(--paper); font: 700 5pt var(--sans); }

@@ -5,11 +5,17 @@ import datetime as dt
 import html
 import math
 import re
+import ssl
 import urllib.request
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
 
 from ..models import DataSourceStatus, DataState, NewsItem, SourceRef
+
+# Contexte SSL permissif pour les sites avec certificats auto-signes ou problematiques
+_SSL_CONTEXT = ssl.create_default_context()
+_SSL_CONTEXT.check_hostname = False
+_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 
 def _tag(element: ET.Element) -> str:
@@ -51,8 +57,11 @@ def _date(element: ET.Element) -> dt.datetime | None:
 
 
 def _payload(url: str) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "Signal-Matin/1.0"})
-    with urllib.request.urlopen(request, timeout=12) as response:
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+    )
+    with urllib.request.urlopen(request, timeout=12, context=_SSL_CONTEXT) as response:
         return response.read(2_000_000)
 
 

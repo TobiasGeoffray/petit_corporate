@@ -141,6 +141,18 @@ def masthead(edition: MorningEdition) -> str:
     """
 
 
+def _wind_arrow_svg(direction_degrees: float | None) -> str:
+    """Genere un SVG de fleche indiquant la direction DU vent selon les 16 points cardinaux."""
+    if direction_degrees is None:
+        return ""
+    # Arrondir à l'angle le plus proche parmi les 16 directions (0, 22.5, 45, ...)
+    rounded_angle = round(direction_degrees / 22.5) * 22.5
+    rotation = round(rounded_angle) % 360
+    return f'''<svg class="wind-arrow" viewBox="0 0 24 24" aria-hidden="true" style="transform: rotate({rotation}deg);">
+      <path d="M12 4 L14 10 L12 8 L8 10 Z M12 20 L12 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>'''
+
+
 def weather_block(edition: MorningEdition) -> str:
     weather = edition.weather
     if weather is None:
@@ -149,6 +161,24 @@ def weather_block(edition: MorningEdition) -> str:
     range_text = ""
     if weather.low_c is not None or weather.high_c is not None:
         range_text = f"Min {weather.low_c:g} / Max {weather.high_c:g} deg"
+    
+    wind_svg = _wind_arrow_svg(weather.wind_direction)
+    wind_display = ""
+    if weather.wind_kmh is not None:
+        # Convertir km/h en nd (1 nd = 1.852 km/h)
+        wind_nd = round(weather.wind_kmh / 1.852)
+        gust_nd = round(weather.wind_gust_kmh / 1.852) if weather.wind_gust_kmh is not None else None
+        
+        direction = ""
+        if weather.wind_direction is not None:
+            dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
+            idx = round(weather.wind_direction / 22.5)
+            direction = dirs[idx % 16]
+        
+        wind_display = f"{wind_svg}<strong>{wind_nd}nd {direction}</strong>"
+        if gust_nd is not None and gust_nd > wind_nd:
+            wind_display += f" {gust_nd}nd en rafales"
+    
     return f"""
     <section class="weather-block ruled-block">
       {section_header("Meteo", weather.location)}
@@ -160,7 +190,7 @@ def weather_block(edition: MorningEdition) -> str:
         </svg>
         <strong>{_e(temp)}</strong><span>{_e(weather.condition)}</span>
       </div>
-      <p>{_e(_truncate(weather.summary, 220))}</p>
+      {f'<p class="weather-wind">{wind_display}</p>' if wind_display else ''}
       <p class="utility">{_e(range_text)}</p>
       {f'<p class="weather-advice">{_e(weather.advice)}</p>' if weather.advice else ''}
     </section>
@@ -201,6 +231,14 @@ def _source_line(item: NewsItem) -> str:
     return " / ".join(_e(bit) for bit in bits if bit)
 
 
+def _source_link(item: NewsItem) -> str:
+    """Génère un lien vers l'article source."""
+    source = item.source
+    if source and source.url:
+        return f'<p class="article-link"><a href="{_e(source.url)}" target="_blank">Lire l\'article complet →</a></p>'
+    return ""
+
+
 def news_lead(item: NewsItem | None, summary_limit: int = 520) -> str:
     if item is None:
         return ""
@@ -210,6 +248,7 @@ def news_lead(item: NewsItem | None, summary_limit: int = 520) -> str:
       <h2>{_e(_truncate(item.title, 150))}</h2>
       {illustration_block(item)}
       <p class="standfirst">{_e(_truncate(item.summary, summary_limit))}</p>
+      {_source_link(item)}
     </article>
     """
 
@@ -221,6 +260,7 @@ def news_card(item: NewsItem, summary_limit: int = 280, compact: bool = False) -
       <p class="article-meta">{_source_line(item)}</p>
       <h3>{_e(_truncate(item.title, 120))}</h3>
       {summary}
+      {_source_link(item) if not compact else ""}
     </article>
     """
 
@@ -231,6 +271,7 @@ def news_feature(item: NewsItem, summary_limit: int = 420) -> str:
       <p class="article-meta">{_source_line(item)}</p>
       <h2>{_e(_truncate(item.title, 150))}</h2>
       <p class="feature-summary">{_e(_truncate(item.summary, summary_limit))}</p>
+      {_source_link(item)}
     </article>
     """
 
@@ -272,6 +313,43 @@ def news_grid(
     ) + "</div>"
 
 
+def _digest_source_line(item: DigestItem) -> str:
+    source = item.source
+    published = source.published_at.astimezone().strftime("%H:%M") if source and source.published_at else ""
+    bits = [item.category.upper(), source.name] if source else [item.category.upper()]
+    if published:
+        bits.append(published)
+    return " / ".join(_e(bit) for bit in bits if bit)
+
+
+def digest_briefs(
+    title: str,
+    items: list[DigestItem],
+    limit: int = 5,
+    *,
+    empty_message: str = "",
+    section_class: str = "",
+) -> str:
+    if not items:
+        if not empty_message:
+            return ""
+        return (
+            f'<section class="briefs {_e(section_class)}">{section_header(title)}'
+            f'<p class="local-empty">{_e(empty_message)}</p></section>'
+        )
+    cards = []
+    for item in items[:limit]:
+        article_link = ""
+        if item.source and item.source.url:
+            article_link = f'<p class="article-link"><a href="{_e(item.source.url)}" target="_blank">Lire l\'article complet →</a></p>'
+        source_line = f'<p class="article-meta">{_digest_source_line(item)}</p>'
+        cards.append(f'<article class="news-card">{source_line}<h3>{_e(_truncate(item.title, 120))}</h3><p>{_e(_truncate(item.summary, 105))}</p>{article_link}</article>')
+    return (
+        f'<section class="briefs {_e(section_class)}">{section_header(title)}'
+        f'<div class="brief-list">{"".join(cards)}</div></section>'
+    )
+
+
 def news_briefs(items: list[NewsItem], limit: int = 5) -> str:
     if not items:
         return ""
@@ -292,6 +370,7 @@ def detailed_brief(item: NewsItem, *, featured: bool = False) -> str:
       <p class="article-meta">{_source_line(item)}</p>
       <{title_tag}>{_e(_truncate(item.title, 190))}</{title_tag}>
       <div class="brief-copy">{paragraphs}</div>
+      {_source_link(item)}
     </article>
     """
 
@@ -307,6 +386,7 @@ def dossier_story(
       <p class="article-meta">{_source_line(item)}</p>
       <h2>{_e(_truncate(item.title, 180))}</h2>
       <div class="dossier-copy">{paragraphs}</div>
+      {_source_link(item)}
     </article>
     """
 
@@ -422,7 +502,10 @@ def digest_list(title: str, items: list[DigestItem], limit: int = 5) -> str:
     cards = []
     for item in items[:limit]:
         source = f'<small>{_e(item.source.name)}</small>' if item.source else ""
-        cards.append(f'<article class="digest-item"><h3>{_e(item.title)}</h3><p>{_e(_truncate(item.summary, 360))}</p>{source}</article>')
+        article_link = ""
+        if item.source and item.source.url:
+            article_link = f'<p class="article-link"><a href="{_e(item.source.url)}" target="_blank">Lire l\'article complet →</a></p>'
+        cards.append(f'<article class="digest-item"><h3>{_e(item.title)}</h3><p>{_e(_truncate(item.summary, 360))}</p>{source}{article_link}</article>')
     return f'<section class="digest-section">{section_header(title)}{"".join(cards)}</section>'
 
 
@@ -538,9 +621,16 @@ def _page_one(edition: MorningEdition) -> str:
         task_list("Priorites", edition.priorities, 4),
         task_list("A ne pas oublier", edition.reminders, 3),
     ]))
-    right = news_lead(edition.news.lead, 360) + news_briefs(secondary, FRONT_BRIEF_LIMIT)
+    right = news_lead(edition.news.lead, 360)
+    right += digest_briefs(
+        "Local",
+        edition.tech,
+        2,
+        empty_message="Aucune actualite locale disponible ce matin.",
+        section_class="front-local-briefs",
+    )
+    right += news_briefs(secondary, 2)
     right += '<div class="front-lower">'
-    right += digest_list("IA & tech", edition.tech, 1)
     right += social_digest(edition, 1) or front_watch(edition.watch, 2)
     right += '</div>'
     right += front_pause(edition)
@@ -569,8 +659,6 @@ def _page_briefs_detail(
         body += f'<div class="briefs-detail-grid{" is-short" if short_page else ""}">'
         body += "".join(detailed_brief(item) for item in items)
         body += "</div>"
-        if short_page:
-            body += '<div class="briefs-detail-floor">' + curiosity_engraving() + "</div>"
     else:
         body += '<div class="briefs-detail-layout">'
         body += detailed_brief(items[0], featured=True)
@@ -660,7 +748,7 @@ def _page_tech(
     *,
     has_continuation: bool = False,
 ) -> str:
-    body = section_header("Technologie & IA", "Comprendre ce qui change vraiment")
+    body = section_header("Local", "Actualites locales")
     items = edition.tech_news if items is None else items
     if items:
         featured_limit = 650 if has_continuation else 950
@@ -674,11 +762,11 @@ def _page_tech(
         body += '</div></div>'
     elif edition.tech:
         body += '<div class="tech-fallback">' + digest_list(
-            "La veille technique", edition.tech, 6,
+            "Actualites locales", edition.tech, 6,
         ) + '</div>'
     else:
-        body += '<p class="empty-state">Aucune actualite technique recente n a pu etre verifiee ce matin. La page reste volontairement vide plutot que de recycler un ancien sujet.</p>'
-    return _page(edition, number, "Technologie & IA", body, slug="tech")
+        body += '<p class="empty-state">Aucune actualite locale recente n a pu etre verifiee ce matin. La page reste volontairement vide plutot que de recycler un ancien sujet.</p>'
+    return _page(edition, number, "Local", body, slug="tech")
 
 
 def _page_tech_continuation(
@@ -687,8 +775,8 @@ def _page_tech_continuation(
     items: list[NewsItem],
 ) -> str:
     body = section_header(
-        "Technologie & IA - suite",
-        "Deux sujets a lire avec un peu plus de recul",
+        "Local - suite",
+        "Actualites locales - suite",
     )
     single = len(items) == 1
     count_class = {
@@ -709,7 +797,7 @@ def _page_tech_continuation(
     return _page(
         edition,
         number,
-        "Technologie & IA - suite",
+        "Local - suite",
         body,
         slug="tech tech-continuation-page",
     )
@@ -730,76 +818,6 @@ def _pages_tech(edition: MorningEdition, number: int) -> list[str]:
     )]
     for chunk in _balanced_story_chunks(edition.tech_news[first_count:]):
         pages.append(_page_tech_continuation(
-            edition,
-            number + len(pages),
-            chunk,
-        ))
-    return pages
-
-
-def _page_curiosity(edition: MorningEdition, number: int) -> str:
-    body = section_header("Veille & curiosites", "Signaux faibles, sciences et culture")
-    if edition.curiosity_news:
-        body += '<div class="curiosity-stories">'
-        body += dossier_story(
-            edition.curiosity_news[0], featured=True, max_chars=760,
-        )
-        body += '<div>' + "".join(
-            dossier_story(item, max_chars=340)
-            for item in edition.curiosity_news[1:4]
-        ) + '</div></div>'
-    body += '<div class="curiosity-lower">'
-    body += digest_list("A surveiller", edition.watch, 4)
-    body += digest_list("Lettres suivies", edition.newsletter_digest, 3)
-    body += recommendation_list(edition.recommendations, 3)
-    body += social_digest(edition, 4)
-    body += '</div>'
-    if edition.curiosity_news and sum(map(_story_weight, edition.curiosity_news[:4])) < 2400:
-        body += '<div class="curiosity-art-floor">' + curiosity_engraving() + "</div>"
-    if not edition.curiosity_news and not any((
-        edition.watch, edition.newsletter_digest, edition.recommendations,
-        edition.social_digest, edition.community_digest,
-    )):
-        body += curiosity_engraving()
-    return _page(edition, number, "Veille & curiosite", body, slug="curiosity")
-
-
-def _page_curiosity_continuation(
-    edition: MorningEdition, number: int, items: list[NewsItem],
-) -> str:
-    single = len(items) == 1
-    count_class = {
-        1: " is-single", 2: " is-two", 3: " is-three", 4: " is-four",
-    }.get(len(items), "")
-    body = section_header(
-        "Veille & curiosites - suite",
-        "Pour aller un peu plus loin",
-    )
-    body += f'<div class="curiosity-continuation{count_class}">'
-    body += "".join(
-        dossier_story(
-            item,
-            featured=single,
-            max_chars=1500 if single else (900 if len(items) == 4 else 1050),
-        )
-        for item in items
-    )
-    body += "</div>"
-    if 3 <= len(items) <= 4 and sum(map(_story_weight, items)) < 2800:
-        body += '<div class="continuation-art-floor">' + curiosity_engraving() + "</div>"
-    return _page(
-        edition,
-        number,
-        "Veille & curiosites - suite",
-        body,
-        slug="curiosity curiosity-continuation-page",
-    )
-
-
-def _pages_curiosity(edition: MorningEdition, number: int) -> list[str]:
-    pages = [_page_curiosity(edition, number)]
-    for chunk in _balanced_story_chunks(edition.curiosity_news[4:]):
-        pages.append(_page_curiosity_continuation(
             edition,
             number + len(pages),
             chunk,
@@ -893,8 +911,8 @@ def _page_compact(edition: MorningEdition, number: int, start: int = 0) -> str:
     body = section_header("La suite du matin", "Journee, nouvelles et curiosite")
     body += '<div class="compact-grid"><div>'
     body += task_list("Rappels", edition.reminders, 5)
-    body += digest_list("IA & tech", edition.tech, 2)
-    body += digest_list("A surveiller", edition.watch, 2)
+    body += digest_briefs("Local", edition.tech, 2)
+    body += digest_briefs("A surveiller", edition.watch, 2)
     body += '</div><div>'
     compact_news = edition.news.all_secondary()[start:]
     if compact_news:
@@ -984,22 +1002,14 @@ def render_html(edition: MorningEdition, css: str | None = None) -> str:
         number += len(tech_pages)
         pages.append(_page_standard_tail(edition, number))
         number += 1
-        curiosity_pages = _pages_curiosity(edition, number)
-        pages.extend(curiosity_pages)
-        number += len(curiosity_pages)
         pages.append(_page_learning(edition, number))
     else:
         news_pages = _pages_news(edition, number, start=detail_count)
         pages.extend(news_pages)
         number += len(news_pages)
-        pages.append(_page_day(edition, number))
-        number += 1
         tech_pages = _pages_tech(edition, number)
         pages.extend(tech_pages)
         number += len(tech_pages)
-        curiosity_pages = _pages_curiosity(edition, number)
-        pages.extend(curiosity_pages)
-        number += len(curiosity_pages)
         pages.append(_page_learning(edition, number))
     return f"""<!doctype html>
 <html lang="fr">
