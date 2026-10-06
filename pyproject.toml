@@ -17,14 +17,15 @@ classifiers = [
 ]
 dependencies = [
   "icalendar>=6.1",
-  "playwright>=1.48",
   "pydantic>=2.9",
   "pypdf>=5.0",
   "python-dotenv>=1.0",
   "PyYAML>=6.0",
+  "pdfkit>=1.0.0",
 ]
 
 [project.optional-dependencies]
+playwright = ["playwright>=1.48"]
 google = [
   "google-api-python-client>=2.150",
   "google-auth-httplib2>=0.2",
